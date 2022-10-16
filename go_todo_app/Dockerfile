@@ -2,10 +2,10 @@ FROM golang:1.18-bullseye as builder
 
 RUN apt-get update
 
-RUN addgroup --system --gid 50001 amdx-app && \
-    adduser --system --ingroup amdx-app \
+RUN addgroup --system --gid 50001 app && \
+    adduser --system --ingroup app \
     --disabled-password --disabled-login --no-create-home \
-    --uid 50001 amdx-app
+    --uid 50001 app
 
 WORKDIR /app
 
@@ -25,11 +25,16 @@ COPY --from=builder /etc/group /etc/passwd /etc/
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 
 # copy app settings
-COPY --from=builder /app/app /app/app
+COPY --from=builder /app/app /bin/app
 #COPY --from=builder /app/pkg/api/config/*.toml /app/pkg/api/config/
 
-WORKDIR /app
-USER madx-app
+USER app
 EXPOSE 18080
-ENTRYPOINT ["/app/app"]
+ENTRYPOINT ["/bin/app"]
 CMD ["18080"]
+
+# local
+FROM golang:1.18 as dev
+WORKDIR /app
+RUN go install github.com/cosmtrek/air@latest
+ENTRYPOINT ["air"]
