@@ -13,12 +13,12 @@ build: ## Build docker image to deploy
 build-local: ## Build docker image to local development
 	docker compose build --no-cache
 
-up: ## Do docker compose up with hot reload
+up: down ## Do docker compose up with hot reload
 	@rm -rf tmp
 	docker compose up -d
 
 down: ## Do docker compose down
-	docker compose down && rm -rf tmp
+	docker compose down
 
 logs: ## Tail docker compose logs
 	docker compose logs -f
@@ -27,4 +27,4 @@ ps: ## Check container status
 	docker compose ps
 
 test: ## Execute tests
-	go test -race -shuffle=on -v .
+	go test -race -shuffle=on -v ./...

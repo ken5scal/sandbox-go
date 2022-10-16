@@ -3,10 +3,13 @@ version: "3.9"
 services:
   app:
     image: gotodo
+    environment:
+      TODO_ENV: dev
+      PORT: 8080
     build:
       args:
         - target=dev
     volumes:
       - .:/app
     ports:
-      - "18000:80"
+      - "18000:8080"
