@@ -1,5 +1,7 @@
 FROM golang:1.18-bullseye as builder
 
+ENV GO111MODULE=on CGO_ENABLED=0 GOOS=linux GOARCH=amd64
+
 RUN apt-get update
 
 RUN addgroup --system --gid 50001 app && \
@@ -15,7 +17,6 @@ RUN go mod download
 COPY . .
 RUN go build -trimpath -ldflags "-w -s" -o app
 
-
 FROM scratch as deploy
 COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 ENV TZ=Asia/Tokyo
@@ -26,12 +27,13 @@ COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certifi
 
 # copy app settings
 COPY --from=builder /app/app /bin/app
+#RUN #pwd
+#RUN #ls /bin/
 #COPY --from=builder /app/pkg/api/config/*.toml /app/pkg/api/config/
 
 USER app
-EXPOSE 18080
+EXPOSE 80
 ENTRYPOINT ["/bin/app"]
-CMD ["18080"]
 
 # local
 FROM golang:1.18 as dev

@@ -10,19 +10,23 @@ import (
 	"testing"
 )
 
-func Test_run(t *testing.T) {
-	t.Skipf("refactoring")
+func TestNewServer_Run(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
+	eg, ctx := errgroup.WithContext(ctx)
+
 	l, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
 		t.Fatalf("failed to listen port %v", err)
 	}
-	eg, ctx := errgroup.WithContext(ctx)
+	mux := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "hello, %s", r.URL.Path[1:])
+	})
 	eg.Go(func() error {
 		//テスト対象を別ゴルーチンで実行
 		// errGroupを使う理由は、サーバーをgoroutineで立ち上げており
 		// Shutdown時にerrがないか確認したいため
-		return run(ctx)
+		s := NewServer(l, mux)
+		return s.Run(ctx)
 	})
 
 	in := "message"

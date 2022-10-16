@@ -8,7 +8,7 @@ help: ## Show options
 		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 build: ## Build docker image to deploy
-	docker build -t gotodo:${DOCKER_TAG} --target deploy
+	docker build -t gotodo:${DOCKER_TAG} --target deploy ./
 
 build-local: ## Build docker image to local development
 	docker compose build --no-cache
