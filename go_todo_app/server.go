@@ -12,13 +12,16 @@ import (
 )
 
 type Server struct {
+	// http.ListenAndServeより柔軟
+	// shutdown関数やタイムアウトも設定できる
 	srv *http.Server
 	l   net.Listener
 }
 
+// NewServer muxもlistenerも外部から受け取って、サーバの実行のみに集中
 func NewServer(l net.Listener, mux http.Handler) *Server {
 	return &Server{
-		// 引数で受け取ったnet.Listenerを利用するので、 Addrフィールドは指定しない
+		// 外部から受け取るnet.Listenerを利用するので、 Addrフィールドは指定しない（Runのテストを実行しやすくする）
 		srv: &http.Server{Handler: mux},
 		l:   l,
 	}
@@ -33,6 +36,7 @@ func (s *Server) Run(ctx context.Context) error {
 	eg, ctx := errgroup.WithContext(ctx)
 	eg.Go(func() error {
 		// 別ゴルーチン。func() errorというシグネチャの関数を起動できる
+		// Shutdown()が呼ばれるとhttp.ErrServerClosedが出力されるらしい
 		if err := s.srv.Serve(s.l); err != nil && err != http.ErrServerClosed {
 			log.Printf("failed to close: %+v", err)
 			return err
