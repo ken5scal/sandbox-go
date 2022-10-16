@@ -13,7 +13,7 @@ build: ## Build docker image to deploy
 build-local: ## Build docker image to local development
 	docker compose build --no-cache
 
-up: down ## Do docker compose up with hot reload
+up: down build-local## Do docker compose up with hot reload
 	@rm -rf tmp
 	docker compose up -d
 

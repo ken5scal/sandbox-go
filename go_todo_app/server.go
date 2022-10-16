@@ -18,10 +18,10 @@ type Server struct {
 	l   net.Listener
 }
 
-// NewServer muxもlistenerも外部から受け取って、サーバの実行のみに集中
+// NewServer muxもlistenerも外部から受け取って、サーバの実行のみに集中させる。テスタビリティの向上
 func NewServer(l net.Listener, mux http.Handler) *Server {
 	return &Server{
-		// 外部から受け取るnet.Listenerを利用するので、 Addrフィールドは指定しない（Runのテストを実行しやすくする）
+		// 外部から受け取るnet.Listenerを利用するので、 Addrフィールドは指定しない
 		srv: &http.Server{Handler: mux},
 		l:   l,
 	}
