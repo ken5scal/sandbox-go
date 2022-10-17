@@ -2,6 +2,7 @@
 
 # ?
  * errgroup.Group
+ * type
 
 # memo
  * docker compose build --no-cache
