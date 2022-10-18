@@ -37,10 +37,12 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	//lt := &handler.ListTask{DB: db, Repo: r}
 	at := &handler.AddTask{Service: &service.AddTask{DB: db, Repo: r}, Validator: v}
 	lt := &handler.ListTask{Service: &service.ListTask{DB: db, Repo: r}}
+	ru := &handler.RegisterUser{Service: &service.RegisterUser{DB: db, Repo: r}, Validator: v}
 
 	mux := chi.NewRouter()
 	mux.Post("/tasks", at.ServeHTTP)
 	mux.Get("/tasks", lt.ServeHTTP)
+	mux.Post("/register", ru.ServeHTTP)
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		_, _ = w.Write([]byte(`{"status": "ok"}`))
