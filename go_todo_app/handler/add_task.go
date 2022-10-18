@@ -3,14 +3,14 @@ package handler
 import (
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
-	"github.com/ken5scal/go_todo_app/entity"
-	"github.com/ken5scal/go_todo_app/store"
 	"net/http"
-	"time"
 )
 
 type AddTask struct {
-	Storage   *store.TaskStorage
+	//Storage   *store.TaskStorage
+	//DB        *sqlx.DB
+	//Repo      store.Repository
+	Service   AddTaskService
 	Validator *validator.Validate
 }
 
@@ -30,12 +30,14 @@ func (at *AddTask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t := &entity.Task{
-		Title:   b.Title,
-		Status:  entity.TaskStatusTodo,
-		Created: time.Now(),
-	}
-	id, err := store.Tasks.Add(t)
+	//t := &entity.Task{
+	//	Title:  b.Title,
+	//	Status: entity.TaskStatusTodo,
+	//	//Created: time.Now(),
+	//}
+	// //id, err := store.Tasks.Add(t)
+	//err := at.Repo.AddTask(ctx, at.DB, t)
+	t, err := at.Service.AddTask(ctx, b.Title)
 	if err != nil {
 		RespondJSON(ctx, w, &ErrResponse{Message: err.Error()}, http.StatusInternalServerError)
 		return
@@ -43,6 +45,7 @@ func (at *AddTask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	rsp := struct {
 		ID int `json:"id"`
-	}{ID: int(id)}
+		//}{ID: int(id)}
+	}{ID: int(t.ID)}
 	RespondJSON(ctx, w, rsp, http.StatusOK)
 }

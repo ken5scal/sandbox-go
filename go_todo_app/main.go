@@ -17,7 +17,12 @@ func run(ctx context.Context) error {
 	if err != nil {
 		log.Fatalf("failed to listen port %d: %v", cfg.Port, err)
 	}
-	mux := NewMux() // NewMux()
+	//mux := NewMux() // NewMux()
+	mux, cleanup, err := NewMux(ctx, cfg)
+	if err != nil {
+		return err
+	}
+	defer cleanup()
 	s := NewServer(l, mux)
 
 	url := fmt.Sprintf("http://%s", l.Addr().String())
