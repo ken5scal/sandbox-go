@@ -22,6 +22,8 @@ func TestNew(t *testing.T) {
 				DBUser:     "todo",
 				DBPassword: "todo",
 				DBName:     "todo",
+				RedisHost:  "127.0.0.1",
+				RedisPort:  36379,
 			},
 		},
 	}
