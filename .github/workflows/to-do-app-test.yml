@@ -3,7 +3,11 @@ on:
   push:
     branches:
       - "main"
+    paths:
+      - go_todo_app/**
   pull_request:
+    paths:
+      - go_todo_app/**
 name: todo-app-test
 jobs:
   test:
