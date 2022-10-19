@@ -10,6 +10,8 @@
  * docker compose up
  * curl -i -XPOST localhost:18000/tasks -d @./handler/testdata/add_task/ok_req.json.golden -v
  * curl -i -XGET localhost:18000/tasks
+ * openssl genrsa 4096 > secret.pem
+ * openssl rsa -pubout < secret.pem > public.pem
 
 
 # 元ネタ
