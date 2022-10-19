@@ -65,9 +65,8 @@ func TestListTask(t *testing.T) {
 			sut.ServeHTTP(w, r)
 
 			resp := w.Result()
-			testutil.AssertResponse(t,
-				resp, tt.want.status, testutil.LoadFile(t, tt.want.rspFile),
-			)
+			b := testutil.LoadFile(t, tt.want.rspFile)
+			testutil.AssertResponse(t, resp, tt.want.status, b)
 		})
 	}
 }
