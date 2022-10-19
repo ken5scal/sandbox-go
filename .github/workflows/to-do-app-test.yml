@@ -4,10 +4,10 @@ on:
     branches:
       - "main"
     paths:
-      - go_todo_app/**
+      - 'go_todo_app/**'
   pull_request:
     paths:
-      - go_todo_app/**
+      - 'go_todo_app/**'
 name: todo-app-test
 jobs:
   test:
@@ -45,6 +45,8 @@ jobs:
         go-version: '>=1.18'
     - uses: actions/checkout@v3
     - run: |
+        openssl genrsa 4096 > ./auth/cert/secret.pem
+        openssl rsa -pubout < ./auth/cert/secret.pem > ./auth/cert/public.pem
         go install github.com/k0kubun/sqldef/cmd/mysqldef@latest
         mysqldef -u todo -p todo -h 127.0.0.1 -P 3306 todo < ./_tools/mysql/schema.sql
     - run: go test ./... -coverprofile=coverage.out
