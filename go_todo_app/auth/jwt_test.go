@@ -19,14 +19,16 @@ import (
 )
 
 func TestEmbed(t *testing.T) {
-	want := []byte("BEGIN PUBLIC KEY")
-	if !bytes.Contains(rawPubKey, want) {
-		t.Errorf("want %s, but got %s", want, rawPubKey)
+	want01 := []byte("BEGIN")
+	want02 := []byte("PRIVATE KEY")
+	if !bytes.Contains(rawPubKey, want01) && !bytes.Contains(rawPubKey, want02) {
+		t.Errorf("want %s, but got %s", want01, rawPubKey)
 	}
 
-	want = []byte("BEGIN PRIVATE KEY")
-	if !bytes.Contains(rawPrivKey, want) {
-		t.Errorf("want %s, but got %s", want, rawPrivKey)
+	want01 = []byte("BEGIN")
+	want02 = []byte("PRIVATE KEY")
+	if !bytes.Contains(rawPrivKey, want01) && !bytes.Contains(rawPrivKey, want02) {
+		t.Errorf("want %s, but got %s", want01, rawPrivKey)
 	}
 }
 
