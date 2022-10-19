@@ -12,11 +12,7 @@ import (
 	"testing"
 )
 
-func TestTaskStore_Add(t *testing.T) {
-	type fields struct {
-		LastID entity.TaskID
-		Tasks  map[entity.TaskID]*entity.Task
-	}
+func TestTaskStore_ServeHTTP(t *testing.T) {
 	type args struct {
 		t       *entity.Task
 		reqFile string
