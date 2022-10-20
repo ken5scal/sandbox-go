@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ken5scal/go_todo_app/entity"
 	"github.com/ken5scal/go_todo_app/store"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type RegisterUser struct {
@@ -13,9 +14,13 @@ type RegisterUser struct {
 }
 
 func (ru *RegisterUser) RegisterUser(ctx context.Context, name, password, role string) (*entity.User, error) {
+	encPwd, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, fmt.Errorf("cannot hash password: %w", err)
+	}
 	u := &entity.User{
 		Name:     name,
-		Password: password,
+		Password: string(encPwd),
 		Role:     role,
 	}
 	if err := ru.Repo.RegisterUser(ctx, ru.DB, u); err != nil {

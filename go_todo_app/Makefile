@@ -26,7 +26,7 @@ logs: ## Tail docker compose logs
 ps: ## Check container status
 	docker compose ps
 
-test: up## Execute tests
+test: ## Execute tests
 	go test -race -shuffle=on -v ./...
 
 dry-migrate: ## Try migration

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
+	"github.com/ken5scal/go_todo_app/auth"
 	"github.com/ken5scal/go_todo_app/clock"
 	"github.com/ken5scal/go_todo_app/config"
 	"github.com/ken5scal/go_todo_app/handler"
@@ -31,6 +32,15 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		return nil, cleanup, err
 	}
 	r := store.Repository{Clocker: clock.RealClocker{}}
+	kvs, err := store.NewKVS(ctx, cfg)
+	if err != nil {
+		return nil, cleanup, err
+	}
+	jwter, err := auth.NewJWTer(kvs, r.Clocker)
+	if err != nil {
+		return nil, cleanup, err
+	}
+
 	////at := &handler.AddTask{Storage: store.Tasks, Validator: v}
 	////lt := &handler.ListTask{Storage: store.Tasks}
 	//at := &handler.AddTask{DB: db, Repo: r, Validator: v}
@@ -38,7 +48,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	at := &handler.AddTask{Service: &service.AddTask{DB: db, Repo: r}, Validator: v}
 	lt := &handler.ListTask{Service: &service.ListTask{DB: db, Repo: r}}
 	ru := &handler.RegisterUser{Service: &service.RegisterUser{DB: db, Repo: r}, Validator: v}
-	l := &handler.Login{Service: &service.Login{DB: db, Repo: r}, Validator: v}
+	l := &handler.Login{Service: &service.Login{DB: db, Repo: &r, TokenGenerator: jwter}, Validator: v}
 
 	mux := chi.NewRouter()
 	mux.Post("/tasks", at.ServeHTTP)
