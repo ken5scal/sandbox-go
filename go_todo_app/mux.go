@@ -51,8 +51,18 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	l := &handler.Login{Service: &service.Login{DB: db, Repo: &r, TokenGenerator: jwter}, Validator: v}
 
 	mux := chi.NewRouter()
-	mux.Post("/tasks", at.ServeHTTP)
-	mux.Get("/tasks", lt.ServeHTTP)
+	mux.Route("/admin", func(r chi.Router) {
+		r.Use(handler.AuthMiddleware(jwter), handler.AdminMiddleware)
+		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json; charset=utf-8")
+			_, _ = w.Write([]byte(`{"message": "admin only"`))
+		})
+	})
+	mux.Route("/tasks", func(r chi.Router) {
+		r.Use(handler.AuthMiddleware(jwter))
+		r.Post("/", at.ServeHTTP)
+		r.Get("/", lt.ServeHTTP)
+	})
 	mux.Post("/register", ru.ServeHTTP)
 	mux.Post("/login", l.ServeHTTP)
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
