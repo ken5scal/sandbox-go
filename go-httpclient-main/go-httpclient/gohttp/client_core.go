@@ -24,7 +24,7 @@ const (
 )
 
 func (c *httpClient) do(method, url string, headers http.Header, body interface{}) (*core.Response, error) {
-	fullHeaders := c.getRequestHeders(headers)
+	fullHeaders := c.getRequestHeaders(headers)
 
 	requestBody, err := c.getRequestBody(fullHeaders.Get("Content-Type"), body)
 	if err != nil {
@@ -80,7 +80,7 @@ func (c *httpClient) getHttpClient() core.HttpClient {
 		c.client = &http.Client{
 			Timeout: c.getResponseTimeout() + c.getConnectionTimeout(),
 			Transport: &http.Transport{
-				MaxIdleConnsPerHost:   c.getMaXIdleCOnnections(),
+				MaxIdleConnsPerHost:   c.getMaxIdleConnections(),
 				DialContext:           dialer.DialContext,
 				ResponseHeaderTimeout: c.getResponseTimeout(),
 			},
@@ -90,7 +90,7 @@ func (c *httpClient) getHttpClient() core.HttpClient {
 	return c.client
 }
 
-func (c *httpClient) getMaXIdleCOnnections() int {
+func (c *httpClient) getMaxIdleConnections() int {
 	if c.builder.maxIdleConnections > 0 {
 		return c.builder.maxIdleConnections
 	}

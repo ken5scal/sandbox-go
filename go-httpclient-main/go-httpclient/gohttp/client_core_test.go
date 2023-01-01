@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestGetRequestHeders(t *testing.T) {
+func TestGetRequestHeaders(t *testing.T) {
 	type fields struct {
 		Headers http.Header
 	}
@@ -43,10 +43,10 @@ func TestGetRequestHeders(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := NewBuilder().SetHeaders(tt.fields.Headers).Build()
-			got := c.(*httpClient).getRequestHeders(tt.args.requestHeaders)
+			got := c.(*httpClient).getRequestHeaders(tt.args.requestHeaders)
 
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("httpClient.getRequestHeders() = %v, want %v", got, tt.want)
+				t.Errorf("httpClient.getRequestHeaders() = %v, want %v", got, tt.want)
 			}
 		})
 	}

@@ -15,7 +15,7 @@ func getHeaders(headers ...http.Header) http.Header {
 	return requestHeaders
 }
 
-func (c *httpClient) getRequestHeders(requestHeaders http.Header) http.Header {
+func (c *httpClient) getRequestHeaders(requestHeaders http.Header) http.Header {
 	result := make(http.Header)
 
 	// add common headers to the request
