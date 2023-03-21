@@ -89,6 +89,7 @@ func findAuthorAndZip(siteURL string) (string, string) {
 }
 
 func extractText(zipURL string) (string, error) {
+	log.Println("query", zipURL)
 	resp, err := http.Get(zipURL)
 	if err != nil {
 		return "", err
@@ -99,14 +100,9 @@ func extractText(zipURL string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	// archive/zipを使ってzipファイルを展開する。バイト列をReaderとして読み込ませる。
 	r, err := zip.NewReader(bytes.NewReader(b), int64(len(b)))
-	if err != nil {
-		return "", err
-	}
 	for _, file := range r.File {
-		// 拡張子がtxtのファイルを探す
-		if path.Ext(file.Name) != ".txt" {
+		if path.Ext(file.Name) == ".txt" {
 			f, err := file.Open()
 			if err != nil {
 				return "", err
@@ -116,18 +112,14 @@ func extractText(zipURL string) (string, error) {
 			if err != nil {
 				return "", err
 			}
-
-			// コンテンツがShiftJISでエンコードされているので、UTF-8に変換する
 			b, err = japanese.ShiftJIS.NewDecoder().Bytes(b)
 			if err != nil {
 				return "", err
 			}
-
 			return string(b), nil
 		}
 	}
-
-	return "", errors.New("no contents found")
+	return "", errors.New("contents not found")
 }
 
 func main() {
@@ -138,11 +130,11 @@ func main() {
 	}
 	for _, entry := range entries {
 		fmt.Println(entry.SiteURL, entry.Title, entry.ZipURL)
-		// content, err := extractText(entry.ZipURL)
-		// if err != nil {
-		// 	log.Println(err)
-		// 	continue
-		// }
-		// fmt.Println(content)
+		content, err := extractText(entry.ZipURL)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		fmt.Println(content)
 	}
 }
