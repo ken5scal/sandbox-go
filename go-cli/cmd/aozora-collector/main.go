@@ -19,6 +19,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/ikawaha/kagome-dict/ipa"
 	"github.com/ikawaha/kagome/v2/tokenizer"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type Entry struct {
@@ -67,7 +68,7 @@ func findAuthorAndZip(siteURL string) (string, string) {
 	if err != nil {
 		return "", ""
 	}
-	author := doc.Find("table[summary=作家データ] tr:nth-child(1) td:nth-child(2)").Text()
+	author := doc.Find("table[summary=作家データ] tr:nth-child(2) td:nth-child(2)").First().Text()
 	zipURL := ""
 	doc.Find("table.download a").Each(func(n int, elem *goquery.Selection) {
 		href := elem.AttrOr("href", "")
@@ -140,13 +141,11 @@ func main() {
 	log.Printf("found %d entries", len(entries))
 	for _, entry := range entries {
 		log.Printf("adding %+v\n", entry)
-		fmt.Println(entry.SiteURL, entry.Title, entry.ZipURL)
 		content, err := extractText(entry.ZipURL)
 		if err != nil {
 			log.Println(err)
 			continue
 		}
-		fmt.Println(content)
 		err = addEntry(db, &entry, content)
 		if err != nil {
 			log.Println(err)
